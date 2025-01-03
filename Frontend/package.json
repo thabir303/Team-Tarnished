@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.21.0",
     "@radix-ui/react-slot": "^1.1.1",
     "@radix-ui/react-toast": "^1.2.4",
     "@react-pdf/renderer": "^4.1.6",
@@ -20,12 +21,14 @@
     "frontend": "file:",
     "js-cookie": "^3.0.5",
     "lucide-react": "^0.469.0",
+    "pdf-lib": "^1.17.1",
     "pdfjs-dist": "^4.10.38",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-icons": "^5.2.1",
     "react-router-dom": "^7.1.1",
     "react-tabs": "^6.0.2",
+    "react-to-pdf": "^1.0.1",
     "react-toastify": "^10.0.5",
     "sort-by": "^1.2.0",
     "sweetalert2": "^11.12.3"

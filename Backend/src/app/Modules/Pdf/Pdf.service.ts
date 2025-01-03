@@ -21,7 +21,7 @@ const createPDFIntoDB = async (payload: TPdf) => {
 };
 
 const getAllPDFsFromDB = async (query: Record<string, unknown>) => {
-  const PDFQuery = new QueryBuilder(PDF.find().populate('userId'), query)
+  const PDFQuery = new QueryBuilder(PDF.find().populate('user'), query)
     .search(pdfSearchableFields)
     .filter()
     .sort()
@@ -33,7 +33,7 @@ const getAllPDFsFromDB = async (query: Record<string, unknown>) => {
 };
 
 const getSinglePDFFromDB = async (id: string) => {
-  const result = await PDF.findById(id).populate('userId');
+  const result = await PDF.findById(id).populate('user');
   return result;
 };
 

@@ -15,7 +15,6 @@ const ModifiedNavbar = () => {
     axiosSecure
         .get(`http://localhost:3000/api/v1/user?email=${user?.email}`)
         .then((res) => {
-            console.log(res);
             setUser(res.data.data[0]);
         })
         .catch((err) => {
