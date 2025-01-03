@@ -11,7 +11,7 @@ const router = express.Router();
 // const upload = multer({ storage });
 
 router.post(
-  '/chat',
+  '/get-chat-response',
   // auth('admin', 'user'),
   // upload.single('file'), // Specify the field name to be 'file'
   validateRequest(ChatValidation.addChatSchema),
@@ -22,4 +22,4 @@ router.post(
 // router.get('/',auth(), PostControllers.getAllPosts);
 // router.get('/file/:fileName',auth(), PostControllers.getPostFile);
 
-export const PostRoutes = router;
+export const ChatRoutes = router;

@@ -9,9 +9,11 @@ const Root = () => {
   // const loginPage = location.pathname.includes('login');
   return (
     <div className="bg-[#F3F3E6] min-h-screen">
-      <ModifiedNavbar></ModifiedNavbar>
-      <Outlet></Outlet>
+      <div className=" max-w-7xl mx-auto">
+        <ModifiedNavbar></ModifiedNavbar>
+        <Outlet></Outlet>
       <Chatbot></Chatbot>
+    </div>
     </div>
   );
 };
