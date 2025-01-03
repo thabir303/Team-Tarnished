@@ -12,7 +12,7 @@ const useAdmin = () => {
       const res = await axiosSecure.get(
         `http://loalhost:3000/api/v1/user?email=${user?.email}`
       );
-      // console.log(res.data.data[0].role);
+      console.log(res.data.data[0].role);
       return res.data.data[0].role;
     },
     enabled: !!user?.email,

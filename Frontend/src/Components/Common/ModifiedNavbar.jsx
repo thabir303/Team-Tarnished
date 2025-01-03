@@ -3,6 +3,7 @@ import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../Authentication/AuthProvider";
 import logo from "/mainLogo2.png";
 import useAxiosSecure from "../Hooks/useAxiosSecure";
+import useAdmin from "../Hooks/useAdmin";
 
 const ModifiedNavbar = () => {
   const location = useLocation();
@@ -31,9 +32,16 @@ const ModifiedNavbar = () => {
       <li className="mr-10">
         <Link to="/">All PDFs</Link>
       </li>
-      <li className="mr-1">
+      <li className="mr-10">
         <Link to="/users">Users</Link>
       </li>
+      {
+        dbuser?.role =='admin' ? (
+          <li className="mr-1">
+            <Link to="/adminDashboard">Admin Dashboard</Link>
+          </li>
+        ) : null
+      }
     </>
   );
 
@@ -88,7 +96,6 @@ const ModifiedNavbar = () => {
                     <img src={user?.photoURL} alt="photo" />
                   </div>
                 </label>
-                <span>{user?.displayName}</span>
                 <button onClick={handleLogOut} className="btn z">
                   Sign Out
                 </button>
