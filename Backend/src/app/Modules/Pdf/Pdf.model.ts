@@ -12,12 +12,9 @@ const pdfSchema = new Schema<TPdf>(
       fileUrl: {
         type: String,
         required: true,
-        unique: true,
       },
       user: {
         type: Schema.Types.ObjectId,
-        required: [true, 'User id is required'],
-        unique: true,
         ref: 'User',
       },
       transparency: {
