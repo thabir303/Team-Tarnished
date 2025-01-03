@@ -46,9 +46,23 @@ const Chatbot = () => {
     setError("");
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      const mockResponse = "This is a mocked response for testing the frontend interface.";
-      const cleanedResponse = cleanResponse(mockResponse);
+      const formData = new FormData();
+      formData.append("message", value);
+      if (file) {
+        formData.append("file", file);
+      }
+
+      const response = await fetch("http://localhost:3000/api/v1/chat/get-chat-response", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const cleanedResponse = cleanResponse(data.response);
 
       setChatHistory((oldChatHistory) => [
         ...oldChatHistory,
@@ -66,7 +80,7 @@ const Chatbot = () => {
       setFile(null);
       setFileName("");
       if (fileInputRef.current) {
-        fileInputRef.current.value = "";
+        fileInputRef.current.value = ""; // Reset file input
       }
     } catch (error) {
       console.error(error);
