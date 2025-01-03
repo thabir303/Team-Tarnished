@@ -1,5 +1,6 @@
 import { Outlet } from "react-router-dom";
 import ModifiedNavbar from "./Common/ModifiedNavbar";
+import Chatbot from "./Common/Chatbot";
 
 const Root = () => {
   // const location = useLocation();
@@ -10,6 +11,7 @@ const Root = () => {
     <div className="bg-[#F3F3E6] min-h-screen">
       <ModifiedNavbar></ModifiedNavbar>
       <Outlet></Outlet>
+      <Chatbot></Chatbot>
     </div>
   );
 };

@@ -1,35 +1,52 @@
-from fastapi import FastAPI, Query, HTTPException
-from pydantic import BaseModel
-from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
+from fastapi import FastAPI, File, UploadFile
+from fastapi.responses import JSONResponse
+from transformers import AutoProcessor, AutoModelForCTC
 import torch
+import librosa
 
 app = FastAPI()
 
-# Load the Hugging Face chatbot model
-MODEL_NAME = "facebook/blenderbot-400M-distill"  # Replace with any suitable Hugging Face chatbot model
-tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
-model = AutoModelForSeq2SeqLM.from_pretrained(MODEL_NAME)
+# Load the pre-trained model and processor
+processor = AutoProcessor.from_pretrained("tanmoyio/wav2vec2-large-xlsr-bengali")
+model = AutoModelForCTC.from_pretrained("tanmoyio/wav2vec2-large-xlsr-bengali")
 
-class ChatResponse(BaseModel):
-    prompt: str
-    response: str
 
-@app.get("/chat", response_model=ChatResponse)
-def chat_with_model(prompt: str = Query(..., description="The prompt to send to the chatbot model")):
-    if not prompt.strip():
-        raise HTTPException(status_code=400, detail="Prompt cannot be empty")
-
+@app.post("/speech-to-text/")
+async def speech_to_text(audio: UploadFile = File(...)):
     try:
-        # Encode the prompt
-        inputs = tokenizer(prompt, return_tensors="pt")
-        # Generate a response
-        outputs = model.generate(inputs["input_ids"], max_length=100, num_return_sequences=1, pad_token_id=tokenizer.eos_token_id)
-        # Decode the response
-        response = tokenizer.decode(outputs[0], skip_special_tokens=True)
-        # print(f"Prompt: {prompt}")
-        # print(f"Response: {response}")
-        # print(f"inputs : {inputs}")
-        # print(f"outputs : {outputs})")
-        return {"prompt": prompt, "response": response}
+        # Ensure the uploaded file is an audio file
+        if not audio.filename.endswith((".wav", ".mp3")):
+            return JSONResponse(
+                status_code=400, content={"error": "Invalid file format. Please upload a .wav or .mp3 file"}
+            )
+
+        # Save the uploaded file temporarily
+        file_path = f"temp_{audio.filename}"
+        with open(file_path, "wb") as temp_file:
+            temp_file.write(await audio.read())
+
+        # Load audio and preprocess
+        speech, rate = librosa.load(file_path, sr=16000)  # Ensure 16kHz sampling rate
+        input_values = processor(speech, sampling_rate=16000, return_tensors="pt", padding=True).input_values
+
+        # Perform inference
+        with torch.no_grad():
+            logits = model(input_values).logits
+            predicted_ids = torch.argmax(logits, dim=-1)
+
+        # Decode the predicted transcription
+        transcription = processor.batch_decode(predicted_ids)[0]
+
+        # Clean up the temporary file
+        import os
+        os.remove(file_path)
+
+        return {"transcription": transcription}
+
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error generating chatbot response: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
+
+@app.get("/")
+def root():
+    return {"message": "Welcome to Bangla Speech-to-Text API!"}
