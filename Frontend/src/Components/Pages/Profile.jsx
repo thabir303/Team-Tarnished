@@ -2,10 +2,7 @@ import { useParams } from "react-router-dom";
 import useAxiosSecure from "../Hooks/useAxiosSecure";
 import { useEffect, useState } from "react";
 import { Editor } from "@tinymce/tinymce-react";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import "./Profile.css";
-import Swal from "sweetalert2";
-import { Document, Page, Text, View, StyleSheet, pdf } from '@react-pdf/renderer';
 
 const Profile = () => {
   const axiosSecure = useAxiosSecure();
@@ -15,25 +12,6 @@ const Profile = () => {
   const [caption, setCaption] = useState("");
   const [transparency, setTransparency] = useState("public");
   const { id } = useParams();
-
-  const styles = StyleSheet.create({
-    page: {
-      padding: 30,
-      fontSize: 12,
-    },
-    section: {
-      marginBottom: 10,
-    },
-    title: {
-      fontSize: 18,
-      fontWeight: 'bold',
-      marginBottom: 10,
-    },
-    content: {
-      lineHeight: 1.5,
-    },
-  });
-  
 
   useEffect(() => {
     axiosSecure
@@ -50,7 +28,7 @@ const Profile = () => {
     axiosSecure
       .get(`http://localhost:3000/api/v1/pdf`)
       .then((res) => {
-        setPdfs(res.data.data); // Assuming the data is in `data.data`
+        setPdfs(res.data.data);
       })
       .catch((err) => {
         console.error("Failed to fetch PDFs:", err);
@@ -63,82 +41,40 @@ const Profile = () => {
     setEditorContent(content);
   };
 
-  const getTranslation = async (content) => {
-    const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-    // Add instruction to the prompt for Bangla-only responses
-    const enhancedPrompt = `
-        The following text is written in Banglish. Convert it to Bangla and provide your response strictly in Bangla:
-         "${content}"
-        `;
-
-    const result = await model.generateContent(enhancedPrompt);
-
-    return result;
-  };
-
-  const generatePdfFromContent = async (geminiTranslation) => {
-    // console.log(geminiTranslation);
-    // Define the PDF document
-    const MyDocument = (
-      <Document>
-        <Page style={styles.page}>
-          <View style={styles.section}>
-            <Text style={styles.title}>Generated PDF</Text>
-          </View>
-          <View style={styles.section}>
-            <Text style={styles.content}>{geminiTranslation}</Text>
-          </View>
-        </Page>
-      </Document>
-    );
-
-    console.log(MyDocument);
-  
-    // Generate the PDF Blob
-    const pdfBlob = await pdf(MyDocument).toBlob();
-    return pdfBlob;
-  };
-  
-
   const handlePdfSubmit = async () => {
-    if (!caption.trim()) return alert('Caption cannot be empty.');
-    if (!editorContent.trim()) return alert('PDF content cannot be empty.');
-  
+    if (!caption.trim()) return alert("Caption cannot be empty.");
+    if (!editorContent.trim()) return alert("PDF content cannot be empty.");
+    
     try {
-      const translatedContent = await getTranslation(editorContent);
-      const geminiTranslation = translatedContent.response.candidates[0].content.parts[0].text;
-      const pdfBlob = await generatePdfFromContent(geminiTranslation);
-      console.log('PDF Blob:', pdfBlob);
+      const payload = {
+        content: editorContent,  // The content from the editor
+        user: _id,               // User ID
+        transparency,            // Transparency setting
+      };
   
-      const formData = new FormData();
-      formData.append('caption', caption);
-      formData.append('content', editorContent);
-      formData.append('user', _id);
-      formData.append('transparency', transparency);
-      formData.append('file', pdfBlob, `${caption}.pdf`);
+      console.log(payload); // Log the payload to verify
   
-      await axiosSecure.post('http://localhost:3000/api/v1/pdf/create-pdf', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      await axiosSecure.post(
+        "http://localhost:3000/api/v1/pdf/create-pdf",
+        payload  // Send as JSON, not FormData
+      );
   
-      setEditorContent('');
-      setCaption('');
-      setTransparency('public');
-      Swal.fire('Success!', 'PDF created successfully.', 'success');
+      setEditorContent("");
+      setCaption("");
+      setTransparency("public");
   
-      const res = await axiosSecure.get('http://localhost:3000/api/v1/pdf');
+      // Fetch updated PDFs
+      const res = await axiosSecure.get("http://localhost:3000/api/v1/pdf");
       setPdfs(res.data.data);
   
+      // Update user profile with the new PDF count
       await axiosSecure.patch(`http://localhost:3000/api/v1/user/${id}`, {
         totalPdf: totalPdf + 1,
       });
     } catch (error) {
-      console.error('Error creating PDF:', error);
+      console.error("Error creating PDF:", error);
     }
   };
-  
 
   return (
     <div className="profile-container">

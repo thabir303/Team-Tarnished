@@ -5,7 +5,6 @@ const pdfSchema = new Schema<TPdf>(
     {
       caption: {
         type: String,
-        required: true,
       },
       content: {
         type: String,
