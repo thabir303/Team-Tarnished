@@ -43,61 +43,62 @@ const Chatbot = () => {
 
   const getResponse = async () => {
     if (!value.trim() && !file) {
-    setError("Please enter a question or upload a file!");
-    return;
+      setError("Please enter a question or upload a file!");
+      return;
     }
     setIsLoading(true);
     setError("");
   
     try {
-    const formData = new FormData();
-    formData.append("prompt", value); // Add the prompt to the form data
-    if (file) {
-      formData.append("file", file); // Add the file if it exists
-    }
-
-    console.log("formData", formData);
+      const formData = new FormData();
+      formData.append("prompt", value); // Add the prompt to the form data
+      if (file) {
+        formData.append("file", file); // Add the file if it exists
+      }
   
-    // Send request to backend
-    // const response = await axiosSecure.post("http://localhost:3000/api/v1/chat/get-chat-response", formData, {
-    //   headers: { "Content-Type": "multipart/form-data" },
-    // });
-
-    const response = await axiosSecure.post("http://localhost:3000/api/v1/chat/get-chat-response",{
-      prompt: value,
-      user: "6777a6563fa9adcf247ec073"
-    })
-    
-    console.log("response", response.data.data.response.candidates[0].content.parts[0].text);
+      // Add user's message to the chat history immediately
+      setChatHistory((oldChatHistory) => [
+        ...oldChatHistory,
+        {
+          role: "user",
+          parts: value,
+          file: file ? URL.createObjectURL(file) : null,
+        },
+      ]);
   
-    // Extract response from backend
-    const { response: backendResponse } = response.data;
+      // Send request to backend
+      const response = await axiosSecure.post("http://localhost:3000/api/v1/chat/get-chat-response", {
+        prompt: value,
+        user: "6777a6563fa9adcf247ec073",
+      });
   
-    setChatHistory((oldChatHistory) => [
-      ...oldChatHistory,
-      {
-        role: "user",
-        parts: value,
-        file: file ? URL.createObjectURL(file) : null,
-      },
-      {
-        role: "model",
-        parts: backendResponse,
-      },
-    ]);
-    setValue("");
-    setFile(null);
-    setFileName("");
-    if (fileInputRef.current) {
-      fileInputRef.current.value = ""; // Reset file input
-    }
+      // Extract response from backend
+      console.log("response", response.data.data.response.candidates[0].content.parts[0].text);
+      const backendResponse = response.data.data.response.candidates[0].content.parts[0].text;
+  
+      // Append backend's response to chat history
+      setChatHistory((oldChatHistory) => [
+        ...oldChatHistory,
+        {
+          role: "model",
+          parts: backendResponse,
+        },
+      ]);
+  
+      setValue(""); // Clear the input
+      setFile(null); // Clear the file
+      setFileName(""); // Clear the file name
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ""; // Reset file input
+      }
     } catch (error) {
-    console.error(error);
-    setError(`Something went wrong! ${error.message}`);
+      console.error(error);
+      setError(`Something went wrong! ${error.message}`);
     } finally {
-    setIsLoading(false);
+      setIsLoading(false);
     }
   };
+  
   
 
   const handleFileChange = (e) => {
@@ -194,30 +195,31 @@ const Chatbot = () => {
             className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50"
           >
             {chatHistory.map((chatItem, index) => (
-              <div
-                key={index}
-                className={`flex ${
-                  chatItem.role === "user" ? "justify-end" : "justify-start"
-                }`}
-              >
-                <div
-                  className={`max-w-[80%] rounded-2xl px-4 py-2 ${
-                    chatItem.role === "user"
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-200 text-gray-800"
-                  }`}
-                >
-                  {chatItem.file && (
-                    <img
-                      src={chatItem.file}
-                      alt="Uploaded file"
-                      className="max-w-full rounded-lg mb-2"
-                    />
-                  )}
-                  <p className="text-sm">{chatItem.parts}</p>
-                </div>
-              </div>
-            ))}
+  <div
+    key={index}
+    className={`flex ${
+      chatItem.role === "user" ? "justify-end" : "justify-start"
+    }`}
+  >
+    <div
+      className={`max-w-[80%] rounded-2xl px-4 py-2 ${
+        chatItem.role === "user"
+          ? "bg-blue-600 text-white"
+          : "bg-gray-200 text-gray-800"
+      }`}
+    >
+      {chatItem.file && (
+        <img
+          src={chatItem.file}
+          alt="Uploaded file"
+          className="max-w-full rounded-lg mb-2"
+        />
+      )}
+      <p className="text-sm">{chatItem.parts || "No content"}</p>
+    </div>
+  </div>
+))}
+
           </div>
 
           {/* Input Area */}
