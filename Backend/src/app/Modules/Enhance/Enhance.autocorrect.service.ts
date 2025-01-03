@@ -6,15 +6,16 @@ const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 const getCorrectedWord = async (previousText: string, lastWord: string) => {
   const prompt = `
-    তুমি একজন চ্যাটবট যার নাম "বাংলা সহায়ক"। 
-    তোমার কাজ হলো ব্যবহারকারীর দেওয়া পূর্ববর্তী বার্তা এবং সর্বশেষ শব্দটি বিশ্লেষণ করে সেটি সংশোধন করা। 
-    তুমি শুধু সংশোধিত একটি শব্দ দেবে এবং সেটি অবশ্যই বাংলিশে লেখা হবে।
+    Tumi ekjon chatbot jar naam "Bangla Sohayok". 
+    Tomar kaj holo beboharok er deoya purboborti barta ebong shesh shobdoti bishleshon kore sheti shanshodhon kora. 
+    Tumi shudhu shanshodhito ekta shobdo dibe, ebong sheti obosshoi Banglish e hobe (Bangla shobder English okkhore lekha).
 
-    পূর্ববর্তী বার্তা: "${previousText}"
-    সংশোধন করার শব্দ: "${lastWord}"
+    Purboborti barta: "${previousText}"
+    Shanshodhon korar shobdo: "${lastWord}"
 
-    সংশোধিত শব্দ:
+    Shanshodhito shobdo (Banglish e):
   `;
+
 
   const result = await model.generateContent(prompt);
 
