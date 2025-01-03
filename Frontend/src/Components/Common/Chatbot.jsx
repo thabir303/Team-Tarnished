@@ -1,8 +1,9 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useContext } from "react";
 import { Send, Upload, X, File, Sparkles, Trash2 } from "lucide-react";
 import useAxiosSecure from "../Hooks/useAxiosSecure";
 import TextToSpeech from "./TextToSpeech";
 import { use } from "react";
+import { AuthContext } from "../Authentication/AuthProvider";
 
 const Chatbot = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -12,9 +13,11 @@ const Chatbot = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [file, setFile] = useState(null);
   const [fileName, setFileName] = useState("");
+  const [dbuser, setUser] = useState(null);
   const chatContainerRef = useRef(null);
   const fileInputRef = useRef(null);
   const chatWindowRef = useRef(null);
+  const { user } = useContext(AuthContext);
 
   const axiosSecure = useAxiosSecure();
 
@@ -28,15 +31,28 @@ const Chatbot = () => {
 
   useEffect(() => {
     if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
     }
   }, [chatHistory]);
+
+  useEffect(() => {
+    axiosSecure
+      .get(`http://localhost:3000/api/v1/user?email=${user?.email}`)
+      .then((res) => {
+        setUser(res.data.data[0]);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch user data:", err);
+      });
+  }, [axiosSecure, user]);
 
   const toggleChat = () => setIsChatOpen(!isChatOpen);
   const closeChat = () => setIsChatOpen(false);
 
   const surprise = () => {
-    const randomValue = surpriseOptions[Math.floor(Math.random() * surpriseOptions.length)];
+    const randomValue =
+      surpriseOptions[Math.floor(Math.random() * surpriseOptions.length)];
     setValue(randomValue);
   };
 
@@ -49,14 +65,14 @@ const Chatbot = () => {
     }
     setIsLoading(true);
     setError("");
-  
+
     try {
       const formData = new FormData();
       formData.append("prompt", value); // Add the prompt to the form data
       if (file) {
         formData.append("file", file); // Add the file if it exists
       }
-  
+
       // Add user's message to the chat history immediately
       setChatHistory((oldChatHistory) => [
         ...oldChatHistory,
@@ -66,20 +82,30 @@ const Chatbot = () => {
           file: file ? URL.createObjectURL(file) : null,
         },
       ]);
-  // Prepare the conversation context
-  const conversationContext = chatHistory
-  .map((chatItem) => `${chatItem.role === "user" ? "User" : "Bot"}: ${chatItem.parts}`)
-  .join("\n");
+      // Prepare the conversation context
+      const conversationContext = chatHistory
+        .map(
+          (chatItem) =>
+            `${chatItem.role === "user" ? "User" : "Bot"}: ${chatItem.parts}`
+        )
+        .join("\n");
       // Send request to backend
-      const response = await axiosSecure.post("http://localhost:3000/api/v1/chat/get-chat-response", {
-        prompt: `${conversationContext}\nUser: ${value}`,
-        user: "6777a6563fa9adcf247ec073",
-      });
-  
+      const response = await axiosSecure.post(
+        "http://localhost:3000/api/v1/chat/get-chat-response",
+        {
+          prompt: `${conversationContext}\nUser: ${value}`,
+          user: dbuser?._id,
+        }
+      );
+
       // Extract response from backend
-      console.log("response", response.data.data.response.candidates[0].content.parts[0].text);
-      const backendResponse = response.data.data.response.candidates[0].content.parts[0].text;
-  
+      console.log(
+        "response",
+        response.data.data.response.candidates[0].content.parts[0].text
+      );
+      const backendResponse =
+        response.data.data.response.candidates[0].content.parts[0].text;
+
       // Append backend's response to chat history
       setChatHistory((oldChatHistory) => [
         ...oldChatHistory,
@@ -88,7 +114,7 @@ const Chatbot = () => {
           parts: backendResponse,
         },
       ]);
-  
+
       setValue(""); // Clear the input
       setFile(null); // Clear the file
       setFileName(""); // Clear the file name
@@ -102,14 +128,20 @@ const Chatbot = () => {
       setIsLoading(false);
     }
   };
-  
-  
 
   const handleFileChange = (e) => {
-    const validMimeTypes = ["application/pdf", "image/png", "image/jpeg", "video/mp4", "video/x-matroska"];
+    const validMimeTypes = [
+      "application/pdf",
+      "image/png",
+      "image/jpeg",
+      "video/mp4",
+      "video/x-matroska",
+    ];
     const selectedFile = e.target.files[0];
     if (selectedFile && !validMimeTypes.includes(selectedFile.type)) {
-      setError("Invalid file format. Please upload a PDF, PNG, JPEG, MP4, or MKV file.");
+      setError(
+        "Invalid file format. Please upload a PDF, PNG, JPEG, MP4, or MKV file."
+      );
       setFile(null);
       setFileName("");
     } else {
@@ -160,7 +192,7 @@ const Chatbot = () => {
   return (
     <div className="fixed bottom-6 right-6 z-50 sm:bottom-8 sm:right-8">
       {/* Chat Icon */}
-      <button 
+      <button
         onClick={toggleChat}
         className="w-14 h-14 bg-blue-600 rounded-full flex items-center justify-center shadow-lg hover:bg-blue-700 transition-colors duration-200 transform hover:scale-105"
         aria-label="Toggle chat"
@@ -170,7 +202,7 @@ const Chatbot = () => {
 
       {/* Chat Window */}
       {isChatOpen && (
-        <div 
+        <div
           ref={chatWindowRef}
           className="fixed bottom-24 right-6 w-96 h-[32rem] bg-white rounded-2xl shadow-xl flex flex-col overflow-hidden sm:bottom-28 sm:right-8 md:w-[448px] lg:w-[512px]"
           style={{ maxHeight: "calc(100vh - 100px)" }}
@@ -199,38 +231,36 @@ const Chatbot = () => {
             className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50"
           >
             {chatHistory.map((chatItem, index) => (
-  <div
-    key={index}
-    className={`flex ${
-      chatItem.role === "user" ? "justify-end" : "justify-start"
-    }`}
-  >
-    <div
-      className={`max-w-[80%] rounded-2xl px-4 py-2 ${
-        chatItem.role === "user"
-          ? "bg-blue-600 text-white"
-          : "bg-gray-200 text-gray-800"
-      }`}
-    >
-      {chatItem.file && (
-        <img
-          src={chatItem.file}
-          alt="Uploaded file"
-          className="max-w-full rounded-lg mb-2"
-        />
-      )}
-      <p className="text-sm">{chatItem.parts || "No content"}</p>
-      {/* Add TextToSpeech button for model responses */}
-     {chatItem.role === "model" && (
-                   <div className="mt-2">
-                     <TextToSpeech text={chatItem.parts} lang="en-US" />
-                   </div>
-                 )}
-
-    </div>
-  </div>
-))}
-
+              <div
+                key={index}
+                className={`flex ${
+                  chatItem.role === "user" ? "justify-end" : "justify-start"
+                }`}
+              >
+                <div
+                  className={`max-w-[80%] rounded-2xl px-4 py-2 ${
+                    chatItem.role === "user"
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-200 text-gray-800"
+                  }`}
+                >
+                  {chatItem.file && (
+                    <img
+                      src={chatItem.file}
+                      alt="Uploaded file"
+                      className="max-w-full rounded-lg mb-2"
+                    />
+                  )}
+                  <p className="text-sm">{chatItem.parts || "No content"}</p>
+                  {/* Add TextToSpeech button for model responses */}
+                  {chatItem.role === "model" && (
+                    <div className="mt-2">
+                      <TextToSpeech text={chatItem.parts} lang="en-US" />
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
 
           {/* Input Area */}
@@ -294,9 +324,7 @@ const Chatbot = () => {
               </div>
             )}
 
-            {error && (
-              <p className="mt-2 text-sm text-red-500">{error}</p>
-            )}
+            {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
           </div>
         </div>
       )}
