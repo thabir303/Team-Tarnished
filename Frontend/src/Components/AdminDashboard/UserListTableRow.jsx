@@ -4,7 +4,7 @@ import useAxiosSecure from "../Hooks/useAxiosSecure";
 const UserListTableRow = ({ user }) => {
   const axiosSecure = useAxiosSecure();
 
-  const { _id, email, name, phone, role, createdAt } = user;
+  const { _id, email, name, role, createdAt } = user;
   const formattedCreatedAt = new Date(createdAt).toISOString().split("T")[0];
 
   const handleDeleteUser = () => {
@@ -58,7 +58,6 @@ const UserListTableRow = ({ user }) => {
       <th>{formattedCreatedAt}</th>
       <td>{name}</td>
       <td>{email}</td>
-      <td>{phone}</td>
       <td>{role}</td>
       <td>
         {role === "admin" ? (

@@ -17,6 +17,7 @@ const SignUp = () => {
         e.preventDefault();
         const name = e.target.name.value;
         const photo = e.target.photo.value;
+        const phone = e.target.phone.value;
         const email = e.target.email.value;
         const password = e.target.password.value;
         const role = "user";
@@ -38,25 +39,25 @@ const SignUp = () => {
             return;
         }
 
-        createUser(email, password)
-            .then(result => {
-                console.log(result.user);
-                updateUser(name, photo)
-                    .then(() => {
-                        Swal.fire({
-                            title: 'User Created',
-                            text: 'Enjoy Exploring!',
-                            icon: 'success',
-                            confirmButtonText: 'Continue'
-                        })
-                    })
-                    .catch(error => {
-                        setRegisterError(error.code);
-                    });
-                navigate("/login");
-                setSuccess('User Created Successfully.');
-            })
-            .catch(error => console.error(error));
+        // createUser(email, password)
+        //     .then(result => {
+        //         console.log(result.user);
+        //         updateUser(name, photo)
+        //             .then(() => {
+        //                 Swal.fire({
+        //                     title: 'User Created',
+        //                     text: 'Enjoy Exploring!',
+        //                     icon: 'success',
+        //                     confirmButtonText: 'Continue'
+        //                 })
+        //             })
+        //             .catch(error => {
+        //                 setRegisterError(error.code);
+        //             });
+        //         navigate("/login");
+        //         setSuccess('User Created Successfully.');
+        //     })
+        //     .catch(error => console.error(error));
 
 
         createUser(email, password)
@@ -65,12 +66,19 @@ const SignUp = () => {
               .post("http://localhost:3000/api/v1/user/create-user", {
                 name,
                 email,
+                phone,
                 photo,
                 password,
                 role,
               })
               .then((res) => {
                 console.log(res);
+                updateUser(name, photo)
+                    .then(() => {
+                    })
+                    .catch(error => {
+                        setRegisterError(error.code);
+                    });
                 // setUsers((prevUsers) => [...prevUsers, res.data.data]);
                 Swal.fire("Success!", "Registration successful", "success");
                 navigate("/login");
@@ -106,6 +114,12 @@ const SignUp = () => {
                                     <span className="label-text">Name</span>
                                 </label>
                                 <input type="text" placeholder="Your name" name="name" className="input input-bordered" required />
+                            </div>
+                            <div className="form-control">
+                                <label className="label">
+                                    <span className="label-text">Phone</span>
+                                </label>
+                                <input type="text" placeholder="Phone Number" name="phone" className="input input-bordered" required />
                             </div>
                             <div className="form-control">
                                 <label className="label">

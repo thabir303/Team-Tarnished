@@ -12,7 +12,9 @@ router.post(
   UserControllers.createUser,
 );
 
-router.get('/:id', auth('admin'), UserControllers.getSingleUser);
+router.get('/:id',
+   auth('admin', 'user'), 
+UserControllers.getSingleUser);
 
 router.get('/', auth('admin','user'), UserControllers.getAllUsers);
 

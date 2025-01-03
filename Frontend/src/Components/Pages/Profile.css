@@ -1,0 +1,83 @@
+.profile-container {
+	font-family: Arial, sans-serif;
+	margin: 20px;
+	padding: 20px;
+	background: #f9f9f9;
+	border-radius: 10px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Header */
+.profile-header {
+	display: flex;
+	align-items: center;
+	margin-bottom: 20px;
+}
+
+.profile-photo {
+	width: 100px;
+	height: 100px;
+	border-radius: 50%;
+	margin-right: 20px;
+}
+
+.profile-details {
+	display: flex;
+	flex-direction: column;
+}
+
+.profile-name {
+	font-size: 24px;
+	font-weight: bold;
+	margin: 0;
+}
+
+.profile-email,
+.profile-role,
+.profile-total-pdfs {
+	margin: 5px 0;
+}
+
+/* PDFs Section */
+.pdf-section {
+	margin-top: 20px;
+}
+
+.section-title {
+	font-size: 20px;
+	margin-bottom: 10px;
+}
+
+.pdf-list {
+	list-style-type: none;
+	padding: 0;
+}
+
+.pdf-item {
+	margin: 5px 0;
+}
+
+.no-pdfs {
+	font-style: italic;
+}
+
+/* Editor Section */
+.pdf-editor {
+	margin-top: 20px;
+}
+
+.submit-btn {
+	margin-top: 10px;
+	padding: 10px 20px;
+	font-size: 16px;
+	color: white;
+	background-color: #007bff;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	transition: background-color 0.3s;
+}
+
+.submit-btn:hover {
+	background-color: #0056b3;
+}

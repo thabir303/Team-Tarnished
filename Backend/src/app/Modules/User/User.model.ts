@@ -10,6 +10,11 @@ const userSchema = new Schema<TUser>(
         required: true,
         unique: true,
       },
+      phone: {
+        type: String,
+        required: true,
+        unique: true,
+      },
       name: {
         type: String,
         required: true,

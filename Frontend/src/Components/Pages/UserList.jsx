@@ -15,10 +15,7 @@ const UserList = () => {
     axiosSecure
       .get("http://localhost:3000/api/v1/user")
       .then((res) => {
-        const filteredUsers = res.data.data.filter(
-          (fuser) => fuser.email === user.email 
-        );
-        setUsers(filteredUsers);
+        setUsers(res.data.data);
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
