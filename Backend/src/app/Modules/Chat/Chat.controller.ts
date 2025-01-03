@@ -6,7 +6,6 @@ import { ChatService } from './Chat.service';
 
 
 const chatResponse = catchAsync(async (req, res) => {
-  console.log(req.body);
   const response = await ChatService.getChatResponse(req.body.prompt);
 
   sendResponse(res, {

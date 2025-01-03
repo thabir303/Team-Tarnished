@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Send, Upload, X, File, Sparkles, Trash2 } from "lucide-react";
+import useAxiosSecure from "../Hooks/useAxiosSecure";
+import { use } from "react";
 
 const Chatbot = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -12,6 +14,8 @@ const Chatbot = () => {
   const chatContainerRef = useRef(null);
   const fileInputRef = useRef(null);
   const chatWindowRef = useRef(null);
+
+  const axiosSecure = useAxiosSecure();
 
   const surpriseOptions = [
     "What are exoplanets and how are they discovered?",
@@ -35,60 +39,66 @@ const Chatbot = () => {
     setValue(randomValue);
   };
 
-  const cleanResponse = (text) => text.replace(/[*]/g, "").trim();
+  // const cleanResponse = (text) => text.replace(/[*]/g, "").trim();
 
   const getResponse = async () => {
     if (!value.trim() && !file) {
-      setError("Please enter a question or upload a file!");
-      return;
+    setError("Please enter a question or upload a file!");
+    return;
     }
     setIsLoading(true);
     setError("");
-
+  
     try {
-      const formData = new FormData();
-      formData.append("message", value);
-      if (file) {
-        formData.append("file", file);
-      }
+    const formData = new FormData();
+    formData.append("prompt", value); // Add the prompt to the form data
+    if (file) {
+      formData.append("file", file); // Add the file if it exists
+    }
 
-      const response = await fetch("http://localhost:3000/api/v1/chat/get-chat-response", {
-        method: "POST",
-        body: formData,
-      });
+    console.log("formData", formData);
+  
+    // Send request to backend
+    // const response = await axiosSecure.post("http://localhost:3000/api/v1/chat/get-chat-response", formData, {
+    //   headers: { "Content-Type": "multipart/form-data" },
+    // });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      const cleanedResponse = cleanResponse(data.response);
-
-      setChatHistory((oldChatHistory) => [
-        ...oldChatHistory,
-        {
-          role: "user",
-          parts: value,
-          file: file ? URL.createObjectURL(file) : null,
-        },
-        {
-          role: "model",
-          parts: cleanedResponse,
-        },
-      ]);
-      setValue("");
-      setFile(null);
-      setFileName("");
-      if (fileInputRef.current) {
-        fileInputRef.current.value = ""; // Reset file input
-      }
+    const response = await axiosSecure.post("http://localhost:3000/api/v1/chat/get-chat-response",{
+      prompt: value,
+      user: "6777a6563fa9adcf247ec073"
+    })
+    
+    console.log("response", response.data.data.response.candidates[0].content.parts[0].text);
+  
+    // Extract response from backend
+    const { response: backendResponse } = response.data;
+  
+    setChatHistory((oldChatHistory) => [
+      ...oldChatHistory,
+      {
+        role: "user",
+        parts: value,
+        file: file ? URL.createObjectURL(file) : null,
+      },
+      {
+        role: "model",
+        parts: backendResponse,
+      },
+    ]);
+    setValue("");
+    setFile(null);
+    setFileName("");
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ""; // Reset file input
+    }
     } catch (error) {
-      console.error(error);
-      setError(`Something went wrong! ${error.message}`);
+    console.error(error);
+    setError(`Something went wrong! ${error.message}`);
     } finally {
-      setIsLoading(false);
+    setIsLoading(false);
     }
   };
+  
 
   const handleFileChange = (e) => {
     const validMimeTypes = ["application/pdf", "image/png", "image/jpeg", "video/mp4", "video/x-matroska"];
