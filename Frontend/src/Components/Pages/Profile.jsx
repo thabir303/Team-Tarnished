@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import useAxiosSecure from "../Hooks/useAxiosSecure";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import "./Profile.css";
 
@@ -12,6 +12,8 @@ const Profile = () => {
   const [caption, setCaption] = useState("");
   const [transparency, setTransparency] = useState("public");
   const { id } = useParams();
+  const recognitionRef = useRef(null);
+  const [isListening, setIsListening] = useState(false);
 
   useEffect(() => {
     axiosSecure
@@ -34,6 +36,38 @@ const Profile = () => {
         console.error("Failed to fetch PDFs:", err);
       });
   }, [axiosSecure]);
+
+  useEffect(() => {
+    if (!window.SpeechRecognition && !window.webkitSpeechRecognition) {
+      console.warn("Web Speech API is not supported in this browser.");
+      return;
+    }
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.lang = "bn-BD"; // Bangla language
+    recognition.interimResults = false;
+
+    recognition.onresult = (e) => {
+      const transcript = e.results[0][0].transcript;
+      setEditorContent((prevContent) => prevContent + transcript);
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+
+    recognitionRef.current = recognition;
+  }, []);
+
+  const handleVoiceInputToggle = () => {
+    if (isListening) {
+      recognitionRef.current.stop();
+    } else {
+      recognitionRef.current.start();
+      setIsListening(true);
+    }
+  };
 
   const { _id, name, email, photo, role, totalPdf } = user || {};
 
@@ -143,6 +177,13 @@ const Profile = () => {
             }}
             onEditorChange={handleEditorChange}
           />
+          <button
+            className={`voice-btn ${isListening ? "listening" : ""}`}
+            onClick={handleVoiceInputToggle}
+          >
+            {isListening ? "Stop Listening" : "Start Voice Input"}
+          </button>
+
           <button className="submit-btn" onClick={handlePdfSubmit}>
             Submit PDF
           </button>
