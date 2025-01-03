@@ -16,7 +16,6 @@ const chatResponse = catchAsync(async (req, res) => {
   });
 });
 
-
 export const ChatControllers = {
   chatResponse
 };
