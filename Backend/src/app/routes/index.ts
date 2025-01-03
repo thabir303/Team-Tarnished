@@ -3,6 +3,7 @@ import { UserRoutes } from '../Modules/User/User.route';
 import { ChatRoutes } from '../Modules/Chat/Chat.route';
 import { PDFRoutes } from '../Modules/Pdf/Pdf.route';
 import { Enhance } from '../Modules/Enhance/Enhance.autocorrect.route';
+import collaborationRoutes from './collaboration.route';
 
 const router = Router();
 
@@ -23,6 +24,10 @@ const moduleRoutes = [
   {
     path: '/enhance',
     route: Enhance
+  },
+  {
+    path: '/collaboration',
+    route: collaborationRoutes
   },
 ];
 
