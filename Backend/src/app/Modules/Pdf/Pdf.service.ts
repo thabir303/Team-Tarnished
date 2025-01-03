@@ -6,8 +6,6 @@ import { PDF } from './Pdf.model';
 
 const createPDFIntoDB = async (payload: TPdf) => {
 
-  try {
-
     const result = await PDF.create([payload]);
 
     if (!result) {
@@ -15,9 +13,6 @@ const createPDFIntoDB = async (payload: TPdf) => {
     } 
 
     return result[0];
-  } catch (err) {
-    throw new AppError(400, 'Failed to create PDF');
-  }
 };
 
 const getAllPDFsFromDB = async (query: Record<string, unknown>) => {

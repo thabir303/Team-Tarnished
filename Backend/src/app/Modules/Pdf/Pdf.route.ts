@@ -1,5 +1,5 @@
 import express from 'express';
-import multer from 'multer';
+// import multer from 'multer';
 import validateRequest from '../../middlewares/validateRequest';
 import auth from '../../middlewares/auth';
 import { PDFValidation } from './Pdf.validation';
@@ -8,12 +8,12 @@ import { PDFControllers } from './Pdf.controller';
 const router = express.Router();
 
 // Use memory storage to avoid saving the file permanently
-const storage = multer.memoryStorage();
-const upload = multer({ storage });
+// const storage = multer.memoryStorage();
+// const upload = multer({ storage });
 
 router.post(
   '/create-pdf',
-  auth(),
+  auth('admin', 'user'),
 //   upload.single('file'),
   validateRequest(PDFValidation.addPDFSchema),
   PDFControllers.createPDF,

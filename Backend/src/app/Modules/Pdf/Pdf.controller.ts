@@ -67,7 +67,6 @@ const generatePdfFromContent = async (geminiTranslation) => {
 
 const createPDF = catchAsync(async (req, res) => {
     const { content } = req.body;
-    console.log(req.body);
   
     // Create a temporary file path relative to the current working directory
     const tempFilePath = path.join(process.cwd(), `${Date.now()}_temp.pdf`);
@@ -79,7 +78,6 @@ const createPDF = catchAsync(async (req, res) => {
     //   console.log(caption);
       const pdfBuffer = await generatePdfFromContent(translatedContent?.response?.candidates[0].content.parts[0].text);
 
-      console.log(pdfBuffer);
   
       await fs.promises.writeFile(tempFilePath, pdfBuffer);
   
@@ -101,7 +99,6 @@ const createPDF = catchAsync(async (req, res) => {
         caption,
         fileUrl,
       };
-      console.log(PDFData);
   
       const result = await PDFServices.createPDFIntoDB(PDFData);
   

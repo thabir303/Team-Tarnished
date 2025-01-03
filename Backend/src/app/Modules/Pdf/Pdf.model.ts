@@ -11,10 +11,10 @@ const pdfSchema = new Schema<TPdf>(
       },
       fileUrl: {
         type: String,
-        required: true,
       },
       user: {
         type: Schema.Types.ObjectId,
+        unique: false,
         ref: 'User',
       },
       transparency: {
@@ -31,3 +31,5 @@ const pdfSchema = new Schema<TPdf>(
   
 
 export const PDF = model<TPdf>('PDF', pdfSchema);
+
+PDF.syncIndexes();
