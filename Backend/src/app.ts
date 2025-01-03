@@ -17,6 +17,7 @@ const corsOptions = {
 app.use(express.json());
 app.use(cors(corsOptions));
 app.use(cookieParser());
+app.options('*', cors(corsOptions));
 
 // application routes
 app.use('/api/v1', router);

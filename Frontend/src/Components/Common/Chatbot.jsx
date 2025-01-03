@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Send, Upload, X, File, Sparkles, Trash2 } from "lucide-react";
 import useAxiosSecure from "../Hooks/useAxiosSecure";
+import TextToSpeech from "./TextToSpeech";
 import { use } from "react";
 
 const Chatbot = () => {
@@ -65,10 +66,13 @@ const Chatbot = () => {
           file: file ? URL.createObjectURL(file) : null,
         },
       ]);
-  
+  // Prepare the conversation context
+  const conversationContext = chatHistory
+  .map((chatItem) => `${chatItem.role === "user" ? "User" : "Bot"}: ${chatItem.parts}`)
+  .join("\n");
       // Send request to backend
       const response = await axiosSecure.post("http://localhost:3000/api/v1/chat/get-chat-response", {
-        prompt: value,
+        prompt: `${conversationContext}\nUser: ${value}`,
         user: "6777a6563fa9adcf247ec073",
       });
   
@@ -216,6 +220,13 @@ const Chatbot = () => {
         />
       )}
       <p className="text-sm">{chatItem.parts || "No content"}</p>
+      {/* Add TextToSpeech button for model responses */}
+     {chatItem.role === "model" && (
+                   <div className="mt-2">
+                     <TextToSpeech text={chatItem.parts} lang="en-US" />
+                   </div>
+                 )}
+
     </div>
   </div>
 ))}
