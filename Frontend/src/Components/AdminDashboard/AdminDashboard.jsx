@@ -4,8 +4,7 @@ import AdminNav from "./AdminNav";
 const AdminDashboard = () => {
     return (
         <div>
-            <AdminNav></AdminNav>
-            <Outlet></Outlet>
+            Requests
         </div>
     );
 };
