@@ -3,8 +3,7 @@ export const PDF_Transparency = {
     private: 'private',
   } as const;
   
-  export const userSearchableFields = [
-    'email',
-    'name',
-    'presentAddress',
+  export const pdfSearchableFields = [
+    'caption',
+    'content',
   ];

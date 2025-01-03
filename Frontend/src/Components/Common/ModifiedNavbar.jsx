@@ -1,12 +1,27 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../Authentication/AuthProvider";
 import logo from "/mainLogo2.png";
+import useAxiosSecure from "../Hooks/useAxiosSecure";
 
 const ModifiedNavbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const axiosSecure = useAxiosSecure();
+  const [dbuser, setUser] = useState(null);
   const { user, logOut } = useContext(AuthContext);
+
+  useEffect(() => {
+    axiosSecure
+        .get(`http://localhost:3000/api/v1/user?email=${user?.email}`)
+        .then((res) => {
+            console.log(res);
+            setUser(res.data.data[0]);
+        })
+        .catch((err) => {
+            console.error("Failed to fetch user data:", err);
+        });
+}, [axiosSecure, user]);
 
   const handleLogOut = () => {
     logOut().then().catch();
@@ -24,7 +39,7 @@ const ModifiedNavbar = () => {
   );
 
   const handleRedirect = () => {
-    navigate("/profile");
+    navigate(`/profile/${dbuser._id}`);
   };
 
   return (
