@@ -14,7 +14,7 @@ const upload = multer({ storage });
 router.post(
   '/create-pdf',
   auth(),
-  upload.single('file'),
+//   upload.single('file'),
   validateRequest(PDFValidation.addPDFSchema),
   PDFControllers.createPDF,
 );
