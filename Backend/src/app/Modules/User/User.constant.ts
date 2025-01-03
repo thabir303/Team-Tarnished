@@ -1,10 +1,9 @@
 export const USER_ROLE = {
-  editor: 'editor',
+  user: 'user',
   admin: 'admin',
 } as const;
 
 export const userSearchableFields = [
   'email',
   'name',
-  'presentAddress',
 ];

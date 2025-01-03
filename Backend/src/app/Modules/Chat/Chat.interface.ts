@@ -1,4 +1,8 @@
+import { Types } from 'mongoose';
+
 export interface TChat {
-    prompt: string;
-    file?: string;   
-  }
+  prompt: string;
+  extractedText: string;
+  user: Types.ObjectId;
+  response: string;
+}

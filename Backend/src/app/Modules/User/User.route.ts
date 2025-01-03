@@ -8,18 +8,17 @@ const router = express.Router();
 
 router.post(
   '/create-user',
-  auth('admin'),
   validateRequest(UserValidation.addUserSchema),
   UserControllers.createUser,
 );
 
 router.get('/:id', auth('admin'), UserControllers.getSingleUser);
 
-router.get('/', auth('admin','editor'), UserControllers.getAllUsers);
+router.get('/', auth('admin','user'), UserControllers.getAllUsers);
 
 router.patch(
   '/:userId',
-  auth('admin'),
+  auth('admin', 'user'),
   validateRequest(UserValidation.updateUserSchema),
   UserControllers.updateUser,
 );

@@ -3,12 +3,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from './AuthProvider';
 import Swal from 'sweetalert2';
 import logo from "/login.png";
+import useAxiosSecure from '../Hooks/useAxiosSecure';
 
 const SignUp = () => {
     const [registerError, setRegisterError] = useState('');
     const [success, setSuccess] = useState('');
 
     const navigate = useNavigate();
+    const axiosSecure = useAxiosSecure();
     const { createUser, updateUser } = useContext(AuthContext);
 
     const handleRegister = (e) => {
@@ -17,6 +19,7 @@ const SignUp = () => {
         const photo = e.target.photo.value;
         const email = e.target.email.value;
         const password = e.target.password.value;
+        const role = "user";
 
         setRegisterError('');
         setSuccess('');
@@ -35,50 +38,55 @@ const SignUp = () => {
             return;
         }
 
-        // createUser(email, password)
-        //     .then(result => {
-        //         console.log(result.user);
-        //         updateUser(name, photo)
-        //             .then(() => {
-        //                 Swal.fire({
-        //                     title: 'User Created',
-        //                     text: 'Enjoy Exploring!',
-        //                     icon: 'success',
-        //                     confirmButtonText: 'Continue'
-        //                 })
-        //             })
-        //             .catch(error => {
-        //                 setRegisterError(error.code);
-        //             });
-        //         navigate("/login");
-        //         setSuccess('User Created Successfully.');
-        //     })
-        //     .catch(error => console.error(error));
+        createUser(email, password)
+            .then(result => {
+                console.log(result.user);
+                updateUser(name, photo)
+                    .then(() => {
+                        Swal.fire({
+                            title: 'User Created',
+                            text: 'Enjoy Exploring!',
+                            icon: 'success',
+                            confirmButtonText: 'Continue'
+                        })
+                    })
+                    .catch(error => {
+                        setRegisterError(error.code);
+                    });
+                navigate("/login");
+                setSuccess('User Created Successfully.');
+            })
+            .catch(error => console.error(error));
+
+
         createUser(email, password)
           .then(() => {
             axiosSecure
-              .post("https://localhost:3000/api/v1/user/create-user", {
+              .post("http://localhost:3000/api/v1/user/create-user", {
                 name,
                 email,
-                phone,
+                photo,
                 password,
                 role,
               })
               .then((res) => {
                 console.log(res);
                 // setUsers((prevUsers) => [...prevUsers, res.data.data]);
-                Swal.fire("Success!", "User has been added.", "success");
+                Swal.fire("Success!", "Registration successful", "success");
+                navigate("/login");
                 // logOut().then(() => {
                 //   navigate("/login");
                 // });
               })
               .catch((error) => {
                 Swal.fire("Error!", "There was an error in local.", "error");
+                setRegisterError(error.code);
                 console.error(error);
               });
           })
           .catch((error) => {
             Swal.fire("Error!", "There was an error in firebase.", "error");
+            setRegisterError(error.code);
             console.error(error);
           });
     }
@@ -86,7 +94,6 @@ const SignUp = () => {
 
     return (
         <div>
-            <div className="h-24"></div>
             <div className="hero min-h-screen mb-10">
                 <div className="hero-content flex-col lg:flex-row">
                     <div className="text-center flex justify-center w-1/2 lg:text-left">

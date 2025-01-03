@@ -7,9 +7,18 @@ const chatSchema = new Schema<TChat>(
         type: String,
         required: true,
       },
-      file: {
+      extractedText: {
+        type: String,
+      },
+      response: {
         type: String,
         required: true,
+      },
+      user: {
+        type: Schema.Types.ObjectId,
+        required: [true, 'User id is required'],
+        unique: true,
+        ref: 'User',
       },
       
     },

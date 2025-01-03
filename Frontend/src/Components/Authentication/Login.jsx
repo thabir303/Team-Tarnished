@@ -2,7 +2,7 @@ import { useContext, useState } from "react";
 import { AuthContext } from "./AuthProvider";
 import Swal from "sweetalert2";
 import logo from "/login.png";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const Login = () => {
@@ -27,12 +27,12 @@ const Login = () => {
           confirmButtonText: "Continue",
         });
         axios
-          .post("http://loalhost:3000/api/v1/jwt", myUser, {
+          .post("http://localhost:3000/api/v1/jwt", myUser, {
             withCredentials: true,
           })
           .then((res) => {
             if (res.data.success) {
-              navigate("/home/transportList");
+              navigate("/");
             }
           })
           .catch((error) => {
@@ -52,7 +52,7 @@ const Login = () => {
 
   return (
     <div className=" min-h-screen">
-      <div className="w-full flex justify-center my-20">
+      <div className="w-full flex justify-center mt-10">
         
       </div>
       <div className="hero">
@@ -92,6 +92,8 @@ const Login = () => {
                 <button className="btn btn-primary">Login</button>
               </div>
             </form>
+
+            <p className="my-4 text-center">Want to create an account? <Link className="text-blue-600" to="/signup">SignUp</Link></p>
           </div>
         </div>
       </div>

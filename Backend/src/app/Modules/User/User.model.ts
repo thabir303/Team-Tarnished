@@ -10,35 +10,26 @@ const userSchema = new Schema<TUser>(
         required: true,
         unique: true,
       },
-      phone: {
-        type: String,
-        required: true,
-        unique: true,
-      },
       name: {
         type: String,
         required: true,
+      },
+      totalPdf: {
+        type: Number,
+        default: 0,
+      },
+      photo: {
+        type: String,
       },
       password: {
         type: String,
         default: "Ujjal123",
         select:0
       },
-      passwordChangedAt:{
-        type: Date,
-      },
-      needsPasswordChange: {
-        type: Boolean,
-        default: true,
-      },
       role: {
         type: String,
-        enum: ['editor', 'admin'],
-        default:'editor'
-      },
-      isDeleted: {
-        type: Boolean,
-        default: false,
+        enum: ['user', 'admin'],
+        default:'user'
       },
     },
     {
