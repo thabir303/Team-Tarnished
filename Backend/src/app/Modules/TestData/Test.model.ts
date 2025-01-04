@@ -10,11 +10,6 @@ const pdfSchema = new Schema<TTest>(
       fileUrl: {
         type: String,
       },
-      user: {
-        type: Schema.Types.ObjectId,
-        unique: false,
-        ref: 'User',
-      },
     },
     {
       timestamps: true,

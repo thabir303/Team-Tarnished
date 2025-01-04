@@ -4,7 +4,7 @@ import useAxiosSecure from "../Hooks/useAxiosSecure";
 
 const PdfCard = ({ pdf }) => {
   const axiosSecure = useAxiosSecure();
-  const { caption, fileUrl, transparency, translatedContent, content, createdAt } = pdf;
+  const { caption, fileUrl, transparency, user, translatedContent, content, createdAt } = pdf;
   const baseUrl = "http://localhost:9000";
 
   const parseFileUrl = (fileUrl) => {
@@ -93,6 +93,7 @@ const PdfCard = ({ pdf }) => {
 
         <div className="flex justify-between items-center">
           <span className="text-xs text-gray-500">{formatDate(createdAt)}</span>
+          <span className="text-xs text-gray-500">{user.email}</span>
 
           <div className="flex gap-2">
             <button

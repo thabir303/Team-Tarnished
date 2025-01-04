@@ -53,7 +53,7 @@ const Chatbot = () => {
       .get(`http://localhost:3000/api/v1/pdf`)
       .then((res) => {
         console.log(res.data.data);
-        const pdfs = res.data.data.filter((pdf) => pdf.user?.email === user.email);
+        const pdfs = res.data.data.filter((pdf) => pdf.user?.email === user?.email);
         setPdf(pdfs);
       })
       .catch((err) => {

@@ -1,10 +1,11 @@
 import { useParams } from "react-router-dom";
 import useAxiosSecure from "../Hooks/useAxiosSecure";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useContext } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { FileText, Users, Clock, TrendingUp, Eye, Book, Upload, X, Loader2 } from 'lucide-react';
 import PdfCard from "./PdfCard";
+import { AuthContext } from "../Authentication/AuthProvider";
 
 const StatCard = ({ title, value, icon: Icon, change }) => (
   <div className="bg-gradient-to-br from-white to-gray-50 p-4 rounded-xl border">
@@ -69,10 +70,9 @@ const ContributeModal = ({ isOpen, onClose }) => {
     formData.append('file', file);
 
     try {
-      await axiosSecure.post('http://localhost:3000/api/v1/contribute', formData, {
+      await axiosSecure.post('http://localhost:3000/api/v1/test/create-test', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
-      alert('File uploaded successfully! Pending admin review.');
       onClose();
     } catch (error) {
       console.error('Upload failed:', error);
@@ -173,13 +173,15 @@ const ContributeModal = ({ isOpen, onClose }) => {
 const Profile = () => {
   const { id } = useParams();
   const axiosSecure = useAxiosSecure();
-  const [user, setUser] = useState(null);
+  const [dbuser, setUser] = useState(null);
   const [pdfs, setPdfs] = useState([]);
   const [editorContent, setEditorContent] = useState("");
   const [transparency, setTransparency] = useState("public");
   const [isListening, setIsListening] = useState(false);
   const [showContribute, setShowContribute] = useState(false);
   const recognitionRef = useRef(null);
+  const { user } = useContext(AuthContext);
+  
   const [stats, setStats] = useState({
     monthlyData: [],
     metrics: {
@@ -258,14 +260,14 @@ const Profile = () => {
     try {
       await axiosSecure.post("http://localhost:3000/api/v1/pdf/create-pdf", {
         content: editorContent,
-        user: user._id,
+        user: dbuser._id,
         transparency
       });
       
       const [updatedPdfs] = await Promise.all([
         axiosSecure.get("http://localhost:3000/api/v1/pdf"),
         axiosSecure.patch(`http://localhost:3000/api/v1/user/${id}`, {
-          totalPdf: (user.totalPdf || 0) + 1
+          totalPdf: (dbuser.totalPdf || 0) + 1
         })
       ]);
 
@@ -278,7 +280,7 @@ const Profile = () => {
     }
   };
 
-  if (!user) return (
+  if (!dbuser) return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
     </div>
@@ -289,19 +291,19 @@ const Profile = () => {
       <div className="bg-white rounded-xl border p-6 mb-6">
         <div className="flex flex-col md:flex-row items-center gap-6">
           <div className="flex-shrink-0">
-            {user.photo && (
-              <img src={user.photo} alt="" className="w-24 h-24 rounded-xl object-cover" />
+            {dbuser.photo && (
+              <img src={dbuser.photo} alt="" className="w-24 h-24 rounded-xl object-cover" />
             )}
           </div>
           <div className="flex-grow text-center md:text-left">
-            <h1 className="text-2xl font-bold">{user.name}</h1>
-            <p className="text-gray-600 mt-1">{user.email}</p>
+            <h1 className="text-2xl font-bold">{dbuser.name}</h1>
+            <p className="text-gray-600 mt-1">{dbuser.email}</p>
             <div className="flex flex-wrap gap-2 mt-3">
               <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-sm">
-                {user.role}
+                {dbuser.role}
               </span>
               <span className="px-3 py-1 bg-green-50 text-green-600 rounded-full text-sm">
-                {user.totalPdf} PDFs
+                {dbuser.totalPdf} PDFs
               </span>
             </div>
           </div>
@@ -317,12 +319,12 @@ const Profile = () => {
         </div>
       </div>
 
-      {user && id === user._id && (
+      {dbuser && (
         <div className="mb-6 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <StatCard 
               title="Total PDFs" 
-              value={user.totalPdf}
+              value={dbuser.totalPdf}
               icon={FileText}
               change={12}
             />
@@ -392,7 +394,7 @@ const Profile = () => {
         </div>
       )}
 
-      {user && id === user._id && (
+      {dbuser && user.email == dbuser.email && (
         <div className="bg-white rounded-xl border p-6 mb-6">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-semibold">Create New PDF</h2>

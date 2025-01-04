@@ -13,7 +13,7 @@ const createTestIntoDB = async (payload: TTest) => {
 };
 
 const getAllTestsFromDB = async (query: Record<string, unknown>) => {
-  const TestQuery = new QueryBuilder(Test.find().populate('user'), query)
+  const TestQuery = new QueryBuilder(Test.find(), query)
     .filter()
     .sort()
     .paginate()
@@ -24,7 +24,7 @@ const getAllTestsFromDB = async (query: Record<string, unknown>) => {
 };
 
 const getSingleTestFromDB = async (id: string) => {
-  const result = await Test.findById(id).populate('user');
+  const result = await Test.findById(id);
   return result;
 };
 
