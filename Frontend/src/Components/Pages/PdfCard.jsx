@@ -99,13 +99,6 @@ const PdfCard = ({ pdf }) => {
             <button
               onClick={() => window.open(`${baseUrl}${fileUrl}`, "_blank")}
               className="p-2 rounded-full hover:bg-gray-100 transition-colors"
-              title="View PDF"
-            >
-              <Eye className="w-5 h-5 text-gray-600" />
-            </button>
-            <button
-              onClick={handleDownload}
-              className="p-2 rounded-full hover:bg-blue-50 transition-colors"
               title="Download PDF"
             >
               <Download className="w-5 h-5 text-blue-600" />

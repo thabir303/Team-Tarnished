@@ -4,8 +4,13 @@ import useAxiosSecure from "../Hooks/useAxiosSecure";
 import TextToSpeech from "./TextToSpeech";
 import { use } from "react";
 import { AuthContext } from "../Authentication/AuthProvider";
+import { useLocation } from "react-router-dom";
 
 const Chatbot = () => {
+  const location = useLocation();
+  if (location.pathname === '/login' || location.pathname === '/signup') {
+    return null;
+  }
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [value, setValue] = useState("");
   const [error, setError] = useState("");
