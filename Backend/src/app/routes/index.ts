@@ -4,6 +4,7 @@ import { ChatRoutes } from '../Modules/Chat/Chat.route';
 import { PDFRoutes } from '../Modules/Pdf/Pdf.route';
 import { Enhance } from '../Modules/Enhance/Enhance.autocorrect.route';
 import collaborationRoutes from './collaboration.route';
+import { TestRoutes } from '../Modules/TestData/Test.route';
 
 const router = Router();
 
@@ -20,6 +21,10 @@ const moduleRoutes = [
   {
     path: '/pdf',
     route: PDFRoutes
+  },
+  {
+    path: '/test',
+    route: TestRoutes
   },
   {
     path: '/enhance',
