@@ -1,4 +1,4 @@
-"# Team-Tarnished" 
+## **Team-Tarnished** 
 
 ## **User Routes**
 
@@ -112,8 +112,6 @@
     "message": "User deleted successfully"
   }
   ```
-Based on the provided code and naming conventions (e.g., `fileUrl`), here's the updated and aligned **API documentation for PDF routes**:
-
 ## **PDF Routes**
 
 ### **1. Create PDF**
