@@ -4,7 +4,7 @@ import useAxiosSecure from "../Hooks/useAxiosSecure";
 
 const PdfCard = ({ pdf }) => {
   const axiosSecure = useAxiosSecure();
-  const { caption, fileUrl, transparency, content, createdAt } = pdf;
+  const { caption, fileUrl, transparency, translatedContent, content, createdAt } = pdf;
   const baseUrl = "http://localhost:9000";
 
   const parseFileUrl = (fileUrl) => {
@@ -88,7 +88,7 @@ const PdfCard = ({ pdf }) => {
         </div>
 
         <div className="h-24 overflow-hidden text-gray-600 text-sm mb-4">
-          {cleanContent?.slice(0, 150)}...
+        {translatedContent}
         </div>
 
         <div className="flex justify-between items-center">

@@ -1,22 +1,19 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import {
-  createBrowserRouter,
-  RouterProvider,
-} from "react-router-dom";
-import PrivateRoute from './Components/Authentication/PrivateRoute';
-import AdminRoute from './Components/Authentication/AdminRoute';
-import ErrorPage from './ErrorPage';
-import Login from './Components/Authentication/Login';
-import Root from './Components/Root';
-import AdminDashboard from './Components/AdminDashboard/AdminDashboard';
-import AuthProvider from './Components/Authentication/AuthProvider';
-import { QueryClient, QueryClientProvider  } from '@tanstack/react-query';
-import SignUp from './Components/Authentication/SignUp';
-import Home from './Components/Pages/Home';
-import Profile from './Components/Pages/Profile';
-import UserList from './Components/Pages/UserList';
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import "./index.css";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import PrivateRoute from "./Components/Authentication/PrivateRoute";
+import AdminRoute from "./Components/Authentication/AdminRoute";
+import ErrorPage from "./ErrorPage";
+import Login from "./Components/Authentication/Login";
+import Root from "./Components/Root";
+import AdminDashboard from "./Components/AdminDashboard/AdminDashboard";
+import AuthProvider from "./Components/Authentication/AuthProvider";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import SignUp from "./Components/Authentication/SignUp";
+import Home from "./Components/Pages/Home";
+import Profile from "./Components/Pages/Profile";
+import UserList from "./Components/Pages/UserList";
 
 const queryClient = new QueryClient();
 
@@ -28,7 +25,11 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <Home></Home>
+        element: (
+          <PrivateRoute>
+            <Home></Home>
+          </PrivateRoute>
+        ),
       },
       {
         path: "login",
@@ -41,12 +42,18 @@ const router = createBrowserRouter([
       {
         path: "profile/:id",
         element: (
-          <Profile></Profile>
+          <PrivateRoute>
+            <Profile></Profile>
+          </PrivateRoute>
         ),
       },
       {
         path: "users",
-        element: <UserList></UserList>,
+        element: (
+          <PrivateRoute>
+            <UserList></UserList>
+          </PrivateRoute>
+        ),
       },
       {
         path: "adminDashboard",
@@ -68,19 +75,18 @@ const router = createBrowserRouter([
               </PrivateRoute>
             ),
           },
-
         ],
       },
     ],
   },
 ]);
 
-createRoot(document.getElementById('root')).render(
+createRoot(document.getElementById("root")).render(
   <StrictMode>
     <AuthProvider>
       <QueryClientProvider client={queryClient}>
         <RouterProvider router={router} />
       </QueryClientProvider>
     </AuthProvider>
-  </StrictMode>,
-)
+  </StrictMode>
+);

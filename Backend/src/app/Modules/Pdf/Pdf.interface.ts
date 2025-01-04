@@ -4,6 +4,7 @@ import { PDF_Transparency } from './Pdf.constant';
 export interface TPdf {
   caption: string;
   content: string;
+  translatedContent: string;
   fileUrl: string;
   user: Types.ObjectId;
   transparency: 'public' | 'private';

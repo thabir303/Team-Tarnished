@@ -96,6 +96,7 @@ const createPDF = catchAsync(async (req, res) => {
   
       const PDFData = {
         ...req.body,
+        translatedContent: translatedContent?.response?.candidates[0].content.parts[0].text,
         caption,
         fileUrl,
       };
