@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  backend:
+    image: bitFest-backend
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+  frontend:
+    image: bitFest-frontend
+    build:
+      context: ./Frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+  fastapi:
+    image: bitFest-fastapi
+    build:
+      context: ./fastapi
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8001"
+    depends_on:
+      - db
+
+  db:
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: Rafi_Abir
+      MONGO_INITDB_ROOT_PASSWORD: B4hIKH3naTkrjLsi
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:
+  environment:
+    MONGO_INITDB_ROOT_USERNAME: Rafi_Abir
+    MONGO_INITDB_ROOT_PASSWORD: B4hIKH3naTkrjLsi

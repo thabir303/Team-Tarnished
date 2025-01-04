@@ -3,7 +3,7 @@ import useAxiosSecure from "../Hooks/useAxiosSecure";
 import { useEffect, useState, useRef } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { FileText, Users, Clock, TrendingUp, Eye, Book } from 'lucide-react';
+import { FileText, Users, Clock, TrendingUp, Eye, Book, Upload, X, Loader2 } from 'lucide-react';
 import PdfCard from "./PdfCard";
 
 const StatCard = ({ title, value, icon: Icon, change }) => (
@@ -23,6 +23,153 @@ const StatCard = ({ title, value, icon: Icon, change }) => (
   </div>
 );
 
+const ContributeModal = ({ isOpen, onClose }) => {
+  const [file, setFile] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const axiosSecure = useAxiosSecure();
+  const [dragActive, setDragActive] = useState(false);
+
+  const handleDrag = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+
+    const file = e.dataTransfer.files[0];
+    if (file && file.name.endsWith('.csv')) {
+      setFile(file);
+    } else {
+      alert('Please upload a CSV file');
+    }
+  };
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file || !file.name.endsWith('.csv')) {
+      alert('Please upload a valid CSV file');
+      return;
+    }
+    setFile(file);
+  };
+
+  const handleSubmit = async () => {
+    if (!file) return;
+    setLoading(true);
+    
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      await axiosSecure.post('http://localhost:3000/api/v1/contribute', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      alert('File uploaded successfully! Pending admin review.');
+      onClose();
+    } catch (error) {
+      console.error('Upload failed:', error);
+      alert('Upload failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <div 
+        className="bg-white rounded-xl max-w-md w-full p-6 m-4"
+        onDragEnter={handleDrag}
+      >
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-xl font-semibold">Contribute Translation Data</h3>
+          <button 
+            onClick={onClose} 
+            className="text-gray-500 hover:text-gray-700 transition-colors"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        <div className="space-y-4">
+          <div className="text-sm text-gray-600">
+            Help improve our translation system by uploading Banglish-to-Bangla pairs. 
+            Your contribution will be reviewed by admins before being added to the training data.
+          </div>
+          
+          <div 
+            className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors
+              ${dragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}
+              ${file ? 'bg-green-50 border-green-500' : ''}`}
+            onDragEnter={handleDrag}
+            onDragLeave={handleDrag}
+            onDragOver={handleDrag}
+            onDrop={handleDrop}
+          >
+            <input
+              type="file"
+              accept=".csv"
+              onChange={handleFileUpload}
+              className="hidden"
+              id="csvFile"
+            />
+            <label 
+              htmlFor="csvFile" 
+              className="block cursor-pointer"
+            >
+              <div className="flex flex-col items-center gap-3">
+                <Upload className={`h-8 w-8 ${file ? 'text-green-500' : 'text-gray-400'}`} />
+                <div className="text-sm">
+                  {file ? (
+                    <span className="text-green-600 font-medium">{file.name}</span>
+                  ) : (
+                    <span className="text-gray-600">
+                      Drag and drop your CSV file here or click to browse
+                    </span>
+                  )}
+                </div>
+              </div>
+            </label>
+          </div>
+
+          <div className="flex justify-end gap-3 mt-6">
+            <button
+              onClick={onClose}
+              className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSubmit}
+              disabled={!file || loading}
+              className={`px-4 py-2 text-sm font-medium text-white rounded-lg transition-colors
+                ${loading || !file ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'}`}
+            >
+              {loading ? (
+                <div className="flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Uploading...
+                </div>
+              ) : (
+                'Submit Contribution'
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const Profile = () => {
   const { id } = useParams();
   const axiosSecure = useAxiosSecure();
@@ -31,6 +178,7 @@ const Profile = () => {
   const [editorContent, setEditorContent] = useState("");
   const [transparency, setTransparency] = useState("public");
   const [isListening, setIsListening] = useState(false);
+  const [showContribute, setShowContribute] = useState(false);
   const recognitionRef = useRef(null);
   const [stats, setStats] = useState({
     monthlyData: [],
@@ -52,7 +200,7 @@ const Profile = () => {
         setUser(userData.data.data);
         setPdfs(pdfsData.data.data);
 
-        // Simulated analytics data - replace with real API calls
+        // Simulated analytics data
         const monthlyStats = Array.from({ length: 6 }, (_, i) => ({
           month: new Date(2024, i).toLocaleString('default', { month: 'short' }),
           pdfs: Math.floor(Math.random() * 15) + 5,
@@ -81,7 +229,6 @@ const Profile = () => {
     fetchData();
   }, [axiosSecure, id]);
 
-  // Speech recognition setup
   useEffect(() => {
     if (!window.SpeechRecognition && !window.webkitSpeechRecognition) return;
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -139,16 +286,17 @@ const Profile = () => {
 
   return (
     <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
-      {/* Profile Header */}
       <div className="bg-white rounded-xl border p-6 mb-6">
         <div className="flex flex-col md:flex-row items-center gap-6">
-          {user.photo && (
-            <img src={user.photo} alt="" className="w-24 h-24 rounded-xl object-cover" />
-          )}
-          <div className="text-center md:text-left">
+          <div className="flex-shrink-0">
+            {user.photo && (
+              <img src={user.photo} alt="" className="w-24 h-24 rounded-xl object-cover" />
+            )}
+          </div>
+          <div className="flex-grow text-center md:text-left">
             <h1 className="text-2xl font-bold">{user.name}</h1>
             <p className="text-gray-600 mt-1">{user.email}</p>
-            <div className="flex gap-2 mt-3">
+            <div className="flex flex-wrap gap-2 mt-3">
               <span className="px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-sm">
                 {user.role}
               </span>
@@ -157,10 +305,18 @@ const Profile = () => {
               </span>
             </div>
           </div>
+          <div className="flex-shrink-0">
+            <button
+              onClick={() => setShowContribute(true)}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg text-sm font-medium hover:from-blue-600 hover:to-blue-700 transition-all"
+            >
+              <Upload className="h-4 w-4" />
+              Contribute
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Analytics Dashboard */}
       {user && id === user._id && (
         <div className="mb-6 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -223,7 +379,7 @@ const Profile = () => {
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={stats.metrics.categories}>
-                    <CartesianGrid strokeDasharray="3 3" />
+                  <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" />
                     <YAxis />
                     <Tooltip />
@@ -236,7 +392,6 @@ const Profile = () => {
         </div>
       )}
 
-      {/* PDF Editor */}
       {user && id === user._id && (
         <div className="bg-white rounded-xl border p-6 mb-6">
           <div className="flex justify-between items-center mb-6">
@@ -286,7 +441,6 @@ const Profile = () => {
         </div>
       )}
 
-      {/* Published PDFs */}
       <div className="bg-white rounded-xl border p-6">
         <h2 className="text-xl font-semibold mb-6">Published PDFs</h2>
         {pdfs.length > 0 ? (
@@ -301,6 +455,11 @@ const Profile = () => {
           <p className="text-gray-500 text-center py-8">No PDFs published yet</p>
         )}
       </div>
+
+      <ContributeModal 
+        isOpen={showContribute} 
+        onClose={() => setShowContribute(false)} 
+      />
     </div>
   );
 };

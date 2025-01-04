@@ -7,4 +7,5 @@ export const PDF_Transparency = {
     'caption',
     'content',
     'translatedContent',
+    'user',
   ];
