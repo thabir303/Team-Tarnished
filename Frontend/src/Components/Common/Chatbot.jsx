@@ -14,6 +14,7 @@ const Chatbot = () => {
   const [file, setFile] = useState(null);
   const [fileName, setFileName] = useState("");
   const [dbuser, setUser] = useState(null);
+  const [pdfs, setPdf] = useState(null);
   const chatContainerRef = useRef(null);
   const fileInputRef = useRef(null);
   const chatWindowRef = useRef(null);
@@ -41,6 +42,19 @@ const Chatbot = () => {
       .get(`http://localhost:3000/api/v1/user?email=${user?.email}`)
       .then((res) => {
         setUser(res.data.data[0]);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch user data:", err);
+      });
+  }, [axiosSecure, user]);
+
+  useEffect(() => {
+    axiosSecure
+      .get(`http://localhost:3000/api/v1/pdf`)
+      .then((res) => {
+        console.log(res.data.data);
+        const pdfs = res.data.data.filter((pdf) => pdf.user?.email === user.email);
+        setPdf(pdfs);
       })
       .catch((err) => {
         console.error("Failed to fetch user data:", err);
@@ -93,7 +107,7 @@ const Chatbot = () => {
       const response = await axiosSecure.post(
         "http://localhost:3000/api/v1/chat/get-chat-response",
         {
-          prompt: `${conversationContext}\nUser: ${value}`,
+          prompt: `${pdfs} ${conversationContext}\nUser: ${value}`,
           user: dbuser?._id,
         }
       );
