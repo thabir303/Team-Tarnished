@@ -1,83 +1,87 @@
+/* Use with Tailwind by adding to your CSS file */
+
 .profile-container {
-	font-family: Arial, sans-serif;
-	margin: 20px;
-	padding: 20px;
-	background: #f9f9f9;
-	border-radius: 10px;
-	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-/* Header */
-.profile-header {
-	display: flex;
-	align-items: center;
-	margin-bottom: 20px;
-}
-
-.profile-photo {
-	width: 100px;
-	height: 100px;
-	border-radius: 50%;
-	margin-right: 20px;
-}
-
-.profile-details {
-	display: flex;
-	flex-direction: column;
-}
-
-.profile-name {
-	font-size: 24px;
-	font-weight: bold;
-	margin: 0;
-}
-
-.profile-email,
-.profile-role,
-.profile-total-pdfs {
-	margin: 5px 0;
-}
-
-/* PDFs Section */
-.pdf-section {
-	margin-top: 20px;
-}
-
-.section-title {
-	font-size: 20px;
-	margin-bottom: 10px;
-}
-
-.pdf-list {
-	list-style-type: none;
-	padding: 0;
-}
-
-.pdf-item {
-	margin: 5px 0;
-}
-
-.no-pdfs {
-	font-style: italic;
-}
-
-/* Editor Section */
-.pdf-editor {
-	margin-top: 20px;
-}
-
-.submit-btn {
-	margin-top: 10px;
-	padding: 10px 20px;
-	font-size: 16px;
-	color: white;
-	background-color: #007bff;
-	border: none;
-	border-radius: 5px;
-	cursor: pointer;
-	transition: background-color 0.3s;
-}
-
-.submit-btn:hover {
-	background-color: #0056b3;
-}
+	@apply max-w-7xl mx-auto p-4 md:p-8 bg-white shadow-lg rounded-2xl;
+   }
+   
+   .profile-header {
+	@apply flex flex-col md:flex-row items-center md:items-start gap-6 p-6 
+	bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl;
+   }
+   
+   .profile-photo {
+	@apply w-32 h-32 rounded-full object-cover border-4 border-white shadow-md 
+	hover:scale-105 transition-transform duration-300;
+   }
+   
+   .profile-details {
+	@apply space-y-3 text-center md:text-left;
+   }
+   
+   .profile-name {
+	@apply text-2xl md:text-3xl font-bold text-gray-800;
+   }
+   
+   .profile-email, .profile-role, .profile-total-pdfs {
+	@apply flex items-center gap-2 text-gray-600 justify-center md:justify-start;
+   }
+   
+   .pdf-section {
+	@apply mt-8 bg-white rounded-xl p-6 shadow-sm;
+   }
+   
+   .section-title {
+	@apply text-xl md:text-2xl font-semibold text-gray-800 mb-6 pb-2 
+	border-b border-gray-200;
+   }
+   
+   .pdf-editor {
+	@apply mt-8 bg-white rounded-xl p-6 shadow-sm space-y-6;
+   }
+   
+   .form-group {
+	@apply space-y-2;
+   }
+   
+   .form-group label {
+	@apply block text-sm font-medium text-gray-700;
+   }
+   
+   .form-input, .form-select {
+	@apply w-full px-4 py-2 border border-gray-300 rounded-lg 
+	focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors;
+   }
+   
+   .voice-btn {
+	@apply mt-4 px-6 py-2 bg-purple-600 text-white rounded-lg 
+	hover:bg-purple-700 transition-colors flex items-center justify-center gap-2;
+   }
+   
+   .voice-btn.listening {
+	@apply bg-red-600 hover:bg-red-700;
+   }
+   
+   .submit-btn {
+	@apply w-full mt-6 px-6 py-3 bg-blue-600 text-white rounded-lg 
+	hover:bg-blue-700 transition-colors font-medium disabled:opacity-50;
+   }
+   
+   /* TinyMCE Customization */
+   .tox.tox-tinymce {
+	@apply rounded-lg border-gray-300 !important;
+   }
+   
+   .tox .tox-toolbar__primary {
+	@apply bg-gray-50 !important;
+   }
+   
+   /* Mobile Optimization */
+   @media (max-width: 768px) {
+	.profile-container {
+	  @apply p-4;
+	}
+	
+	.profile-header {
+	  @apply p-4;
+	}
+   }

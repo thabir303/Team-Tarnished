@@ -56,7 +56,9 @@ const Home = () => {
                 <div className="mt-8">
                     <TabPanel>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {pdfs.map((pdf) => (
+                            {pdfs
+                            .filter(pdf => pdf.transparency === "public")
+                            .map((pdf) => (
                                 <PdfCard key={pdf._id} pdf={pdf} />
                             ))}
                             {pdfs.length === 0 && (

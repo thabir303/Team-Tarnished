@@ -6,5 +6,6 @@ export const PDF_Transparency = {
   export const pdfSearchableFields = [
     'caption',
     'content',
+    'translatedContent',
     'user',
   ];

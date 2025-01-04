@@ -9,6 +9,9 @@ const pdfSchema = new Schema<TPdf>(
       content: {
         type: String,
       },
+      translatedContent: {
+        type: String,
+      },
       fileUrl: {
         type: String,
       },

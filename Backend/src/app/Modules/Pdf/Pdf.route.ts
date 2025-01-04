@@ -21,6 +21,8 @@ router.post(
 
 router.get('/:id',auth(), PDFControllers.getSinglePDF);
 router.get('/',auth(), PDFControllers.getAllPDFs);
-router.get('/file/:fileName',auth(), PDFControllers.getPDFFile);
+router.get('/file/:fileName',
+    // auth(), 
+    PDFControllers.getPDFFile);
 
 export const PDFRoutes = router;

@@ -56,6 +56,8 @@ export const getObjectFromMinIO = async (bucketName:string, filename:string) => 
         resolve(content);
       });
 
+      console.log(dataStream);
+
       dataStream.on('error', (err) => {
         reject(err);
       });
