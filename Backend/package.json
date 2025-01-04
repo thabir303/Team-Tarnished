@@ -28,9 +28,7 @@
     "express": "^4.19.2",
     "http-status": "^1.7.4",
     "jsonwebtoken": "^9.0.2",
-<<<<<<< HEAD
     "jspdf": "^2.5.2",
-=======
     "langchain": "^0.3.9",
     "minio": "^8.0.3",
     "mongoose": "^8.5.1",

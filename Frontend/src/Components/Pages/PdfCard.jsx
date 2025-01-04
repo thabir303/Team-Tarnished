@@ -71,6 +71,8 @@ const PdfCard = ({ pdf }) => {
     });
   };
 
+  const cleanContent = content?.replace(/<\/?p>/g, '').slice(0, 150);
+
   return (
     <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden">
       <div className="p-4">
@@ -86,7 +88,7 @@ const PdfCard = ({ pdf }) => {
         </div>
 
         <div className="h-24 overflow-hidden text-gray-600 text-sm mb-4">
-          {content?.slice(0, 150)}...
+          {cleanContent?.slice(0, 150)}...
         </div>
 
         <div className="flex justify-between items-center">

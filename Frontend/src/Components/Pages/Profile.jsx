@@ -68,8 +68,8 @@ const Profile = () => {
   };
 
   const handlePdfSubmit = async () => {
-    if (!caption.trim() || !editorContent.trim()) {
-      alert("Caption and content are required");
+    if ( !editorContent.trim()) {
+      alert("Content are required");
       return;
     }
 
@@ -122,8 +122,8 @@ const Profile = () => {
               <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
                 {user.role}
               </span>
-              <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
-                {user.totalPdf || 0} PDFs
+              <span className="px-3 py-1 bg-green-100 text-blue-800 rounded-full text-sm">
+               PDF: {user.totalPdf}
               </span>
             </div>
           </div>
@@ -134,16 +134,7 @@ const Profile = () => {
         <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
           <h2 className="text-2xl font-semibold mb-6">Create New PDF</h2>
           <div className="space-y-4">
-            <div>
-              <label className="block text-gray-700 mb-2">Caption</label>
-              <input
-                type="text"
-                value={caption}
-                onChange={(e) => setCaption(e.target.value)}
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Enter caption"
-              />
-            </div>
+            
             
             <div>
               <label className="block text-gray-700 mb-2">Visibility</label>
@@ -199,7 +190,7 @@ const Profile = () => {
         {pdfs.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {pdfs
-              .filter(pdf => pdf.user._id === id && pdf.Transparency !== "private")
+              .filter(pdf => pdf.user._id === id && (pdf.Transparency !== "private"|| pdf.user._id === user._id))
               .map(pdf => (
                 <PdfCard key={pdf._id} pdf={pdf} />
               ))}
