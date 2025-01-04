@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../Authentication/AuthProvider";
-import logo from "/mainLogo2.png";
+import logo from "/Logo.png";
 import useAxiosSecure from "../Hooks/useAxiosSecure";
 import useAdmin from "../Hooks/useAdmin";
 
@@ -79,9 +79,9 @@ const ModifiedNavbar = () => {
           </div>
           <div className="hidden md:flex items-center ">
             <img className="w-28" src={logo} alt="" />
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-orange-400 via-orange-300 to-orange-400 inline-block text-transparent bg-clip-text">
-              KhuJoo
-            </h1>
+            {/* <h1 className="text-3xl font-bold bg-gradient-to-r from-orange-400 via-orange-300 to-orange-400 inline-block text-transparent bg-clip-text">
+              BanglishVerse
+            </h1> */}
           </div>
         </div>
         <div className="navbar-center hidden lg:flex">
